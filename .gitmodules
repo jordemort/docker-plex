@@ -1,0 +1,8 @@
+[submodule "nvidia-patch"]
+	path = nvidia-patch
+	branch = master
+	url = https://github.com/keylase/nvidia-patch
+[submodule "docker-plex-nvdec"]
+	path = docker-plex-nvdec
+	branch = master
+	url = https://github.com/weshofmann/docker-plex-nvdec
