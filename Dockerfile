@@ -7,6 +7,8 @@ COPY [ "docker-plex-nvdec/Plex Transcoder", "/usr/lib/plexmediaserver/Plex Trans
 COPY nvidia-patch/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY nvidia-patch/patch.sh /usr/local/bin/patch.sh
 
+RUN chmod 755 /usr/local/bin/docker-entrypoint.sh /usr/local/bin/patch.sh
+
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh", "/init"]
 
 ARG NVIDIA_DRIVER_VERSION=440.82
