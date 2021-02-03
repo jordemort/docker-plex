@@ -13,6 +13,8 @@ ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh", "/init"]
 
 ARG NVIDIA_DRIVER_VERSION=440.82
 
+WORKDIR /tmp
+
 RUN curl -fSsl -O http://us.download.nvidia.com/XFree86/Linux-x86_64/${NVIDIA_DRIVER_VERSION}/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run && \
     sh NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run -x && \
     ln -s /usr/bin/true /usr/local/bin/modprobe && \
@@ -28,3 +30,5 @@ RUN curl -fSsl -O http://us.download.nvidia.com/XFree86/Linux-x86_64/${NVIDIA_DR
         --x-library-path=/tmp/null --x-sysconfig-path=/tmp/null && \
     cd /tmp && \
     rm -rf NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}*
+
+WORKDIR /
