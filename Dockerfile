@@ -4,6 +4,8 @@ RUN dpkg-divert --add --rename --divert "/usr/lib/plexmediaserver/Plex Transcode
 
 COPY [ "docker-plex-nvdec/Plex Transcoder", "/usr/lib/plexmediaserver/Plex Transcoder" ]
 
+RUN chmod 755 "/usr/lib/plexmediaserver/Plex Transcoder"
+
 COPY nvidia-patch/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY nvidia-patch/patch.sh /usr/local/bin/patch.sh
 
