@@ -45,7 +45,10 @@ jobs:
 
       - name: Build and push container
         run: |
+          docker pull "$CONTAINER_NAME" || true
+
           docker buildx build --push --pull \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
             --platform "$PLATFORMS" \
             --cache-from "$CONTAINER_NAME" \
             --tag "$CONTAINER_NAME" .
