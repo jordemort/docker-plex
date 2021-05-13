@@ -19,8 +19,6 @@ if [ -z "$docker_version" ] ; then
   exit 1
 fi
 
-current_version=1.2.4
-
 if [ "$current_version" != "$docker_version" ] ; then
   sed -i -E "/ARG NVIDIA_DRIVER_VERSION=/s/=.*/=$current_version/" "$dockerfile"
 fi
