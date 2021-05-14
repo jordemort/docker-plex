@@ -1,19 +1,9 @@
 on:
-  workflow_dispatch:
-    inputs:
-      container_tag:
-        description: Tag for container
-        default: "latest"
-        required: true
-
-  push:
+  pull_request:
     branches:
       - main
 
-  schedule:
-    - cron: '0 0 1/1 * *'
-
-name: Publish container
+name: Build container
 
 env:
   CONTAINER_NAME: jordemort/plex:${{ github.event.inputs.container_tag || 'latest' }}
@@ -47,7 +37,7 @@ jobs:
         run: |
           docker pull "$CONTAINER_NAME" || true
 
-          docker buildx build --push --pull \
+          docker buildx build --pull \
             --build-arg BUILDKIT_INLINE_CACHE=1 \
             --platform "$PLATFORMS" \
             --cache-from "$CONTAINER_NAME" \
