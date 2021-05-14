@@ -3,6 +3,13 @@ on:
     branches:
       - main
 
+  push:
+    branches:
+      - main
+
+  schedule:
+    - cron: '0 0 1/1 * *'
+
 name: Build container
 
 env:
@@ -37,11 +44,20 @@ jobs:
         run: |
           docker pull "$CONTAINER_NAME" || true
 
-          docker buildx build --pull \
-            --build-arg BUILDKIT_INLINE_CACHE=1 \
-            --platform "$PLATFORMS" \
-            --cache-from "$CONTAINER_NAME" \
-            --tag "$CONTAINER_NAME" .
+          buildx_args=(
+            --pull
+            --build-arg BUILDKIT_INLINE_CACHE=1
+            --platform "$PLATFORMS"
+            --cache-from "$CONTAINER_NAME"
+            --tag "$CONTAINER_NAME"
+          )
+
+          if [ "${GITHUB_EVENT_NAME:-}" = "push" ] ; then
+            buildx_argv+=(--push)
+          fi
+
+          set -x
+          docker buildx build "${buildx_argv[@]}"
 
       - uses: sarisia/actions-status-discord@v1
         if: always()
