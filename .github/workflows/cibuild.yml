@@ -57,7 +57,7 @@ jobs:
           fi
 
           set -x
-          docker buildx build "${buildx_argv[@]}"
+          docker buildx build "${buildx_argv[@]}" .
 
       - uses: sarisia/actions-status-discord@v1
         if: always()
