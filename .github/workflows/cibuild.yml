@@ -42,9 +42,9 @@ jobs:
 
       - name: Build and push container
         run: |
-          docker pull "$CONTAINER_NAME" || true
+          docker pull --quiet "$CONTAINER_NAME"  || true
 
-          buildx_args=(
+          buildx_argv=(
             --pull
             --build-arg BUILDKIT_INLINE_CACHE=1
             --platform "$PLATFORMS"
