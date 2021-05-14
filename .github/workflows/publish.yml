@@ -52,3 +52,8 @@ jobs:
             --platform "$PLATFORMS" \
             --cache-from "$CONTAINER_NAME" \
             --tag "$CONTAINER_NAME" .
+
+      - uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
