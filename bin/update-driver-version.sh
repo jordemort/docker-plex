@@ -20,5 +20,8 @@ if [ -z "$docker_version" ] ; then
 fi
 
 if [ "$current_version" != "$docker_version" ] ; then
+  echo "updating from $current_version to $docker_version"
   sed -i -E "/ARG NVIDIA_DRIVER_VERSION=/s/=.*/=$current_version/" "$dockerfile"
+else
+  echo "current version is up-to-date: $current_version"
 fi

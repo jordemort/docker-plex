@@ -14,11 +14,14 @@ jobs:
 
       - run: bin/update-driver-version.sh
 
+      - run: git status
+
       - uses: gr2m/create-or-update-pull-request-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           title: "Update nvidia driver to latest version"
+          commit-message: "Update nvidia driver to latest version"
 
       - uses: sarisia/actions-status-discord@v1
         if: always()
