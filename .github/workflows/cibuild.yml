@@ -41,6 +41,8 @@ jobs:
           password: ${{ secrets.REGISTRY_TOKEN }}
 
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       # Needed for buildx gha cache to work
       - name: Expose GitHub Runtime
