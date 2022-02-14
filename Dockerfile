@@ -13,7 +13,7 @@ RUN chmod 755 /usr/local/bin/docker-entrypoint.sh /usr/local/bin/patch.sh
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh", "/init"]
 
-ARG NVIDIA_DRIVER_VERSION=460.91.03
+ARG NVIDIA_DRIVER_VERSION=470.103.01
 
 WORKDIR /tmp
 

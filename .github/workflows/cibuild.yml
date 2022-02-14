@@ -1,63 +1,65 @@
+name: Build container
 on:
-  pull_request:
-    branches:
-      - main
-
   push:
     branches:
       - main
+  pull_request:
+
+  # Allow for manually running
+  workflow_dispatch:
+    inputs:
+      container_tag:
+        description: Tag for container
+        default: "latest"
+        required: true
 
   schedule:
     - cron: '0 0 1/1 * *'
 
-name: Build container
-
-env:
-  CONTAINER_NAME: jordemort/plex:${{ github.event.inputs.container_tag || 'latest' }}
-  PLATFORMS: linux/amd64
-  DOCKER_CLI_EXPERIMENTAL: enabled
-
 jobs:
-  publish:
-    name: Build and publish image
+  cibuild:
     runs-on: ubuntu-20.04
+    env:
+      CONTAINER_NAME: jordemort/plex
+      DOCKER_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.REGISTRY_TOKEN }}
+      BUILD_PLATFORMS: linux/amd64
+      RAW_CONTAINER_TAG: ${{ github.event.inputs.container_tag || github.event.pull_request.head.ref || 'latest' }}
 
     steps:
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1.2.0
+        uses: docker/setup-qemu-action@v1
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v1.6.0
+        uses: docker/setup-buildx-action@v1.3.0
 
       - name: Login to container registry
-        uses: docker/login-action@v1.10.0
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_TOKEN }}
 
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v2
         with:
           submodules: recursive
 
-      - name: Build and push container
+      # Needed for buildx gha cache to work
+      - name: Expose GitHub Runtime
+        uses: crazy-max/ghaction-github-runtime@v1
+
+      - name: Build container
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          docker pull --quiet "$CONTAINER_NAME"  || true
+          CONTAINER_TAG=$(echo "$RAW_CONTAINER_TAG" | sed 's/[^a-zA-Z0-9]\+/-/')
 
-          buildx_argv=(
-            --pull
-            --build-arg BUILDKIT_INLINE_CACHE=1
-            --platform "$PLATFORMS"
-            --cache-from "$CONTAINER_NAME"
-            --tag "$CONTAINER_NAME"
-          )
-
-          if [ "${GITHUB_EVENT_NAME:-}" = "push" ] ; then
-            buildx_argv+=(--push)
-          fi
-
-          set -x
-          docker buildx build "${buildx_argv[@]}" .
+          docker buildx build \
+            --platform "$BUILD_PLATFORMS" \
+            --tag "$CONTAINER_NAME:$CONTAINER_TAG" \
+            --cache-from type=gha \
+            --cache-to type=gha,mode=max \
+            --pull --push .
 
       - uses: sarisia/actions-status-discord@v1
         if: always()
